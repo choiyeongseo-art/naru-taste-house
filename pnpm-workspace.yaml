@@ -1,0 +1,7 @@
+allowBuilds:
+  '@astryxdesign/cli': true
+  '@astryxdesign/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+  workerd: true

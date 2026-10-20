@@ -19,7 +19,7 @@ body, body *, body *::before, body *::after {
 }
 
 /* Allow the enlarged type to wrap without clipping controls or cards. */
-.brand .brand-title { display:block; width:186px; height:auto; max-width:100%; }
+.brand .brand-title { display:block; width:220px; height:auto; max-width:100%; }
 .site-header { min-height:108px; height:auto; gap:24px; flex-wrap:wrap; padding-block:18px; }
 .header-right { flex-wrap:wrap; }
 .address-bar { justify-content:flex-end; }
@@ -57,7 +57,7 @@ body, body *, body *::before, body *::after {
 }
 @media(max-width:950px) { .window-content { grid-template-columns:190px minmax(0,1fr); } }
 @media(max-width:680px) {
- .brand .brand-title { width:150px; }
+ .brand .brand-title { width:172px; }
  .site-header { min-height:88px; gap:12px; }
  .window-content { display:flex; flex-direction:column; }
  .side-nav { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }

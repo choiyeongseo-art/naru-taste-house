@@ -1,3 +1,18 @@
 @import './house.css';
 @import './features.css';
 @import './responsive.css';
+
+@font-face {
+  font-family: 'Ongleip Uiyeon';
+  src: url('./fonts/ongleip-uiyeon.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+:root {
+  --font-uiyeon: 'Ongleip Uiyeon', sans-serif;
+}
+/* Keep theme wrappers, form controls and SVG labels on the embedded font. */
+body, body *, body *::before, body *::after {
+  font-family: var(--font-uiyeon);
+}

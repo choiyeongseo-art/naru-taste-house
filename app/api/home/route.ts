@@ -1,7 +1,5 @@
 import { getChatGPTUser } from '../../chatgpt-auth';
-import { getDb } from '../../../db';
-import { homes } from '../../../db/schema';
-import { eq } from 'drizzle-orm';
+import { readHome, writeHome } from '../../../db/home-store';
 import { z } from 'zod';
 const State = z.object({
   nickname: z.string().trim().min(1).max(20), bio: z.string().max(100),
@@ -16,8 +14,8 @@ export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return Response.json({ error: '로그인이 필요해요.' }, { status: 401 });
   try {
-    const rows = await getDb().select().from(homes).where(eq(homes.userId, user.userId)).limit(1);
-    return Response.json({ state: rows[0] ? JSON.parse(rows[0].state) : null, updatedAt: rows[0]?.updatedAt || null }, { headers: { 'Cache-Control': 'no-store' } });
+    const home = await readHome(user.userId);
+    return Response.json({ state: home?.state ?? null, updatedAt: home?.updatedAt ?? null }, { headers: { 'Cache-Control': 'no-store' } });
   } catch { return Response.json({ error: '방을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.' }, { status: 503 }); }
 }
 export async function PUT(request: Request) {
@@ -30,7 +28,7 @@ export async function PUT(request: Request) {
     const parsed = State.safeParse(JSON.parse(raw));
     if (!parsed.success) return Response.json({ error: '저장할 내용을 다시 확인해 주세요.' }, { status: 400 });
     const state = parsed.data, updatedAt = Date.now();
-    await getDb().insert(homes).values({ userId: user.userId, nickname: state.nickname, state: JSON.stringify(state), updatedAt }).onConflictDoUpdate({ target: homes.userId, set: { nickname: state.nickname, state: JSON.stringify(state), updatedAt } });
+    await writeHome(user.userId, state.nickname, state, updatedAt);
     return Response.json({ ok: true, updatedAt });
   } catch { return Response.json({ error: '저장하지 못했어요. 변경 내용은 이 화면에 남아 있어요.' }, { status: 503 }); }
 }

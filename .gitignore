@@ -36,6 +36,7 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+*.tsbuildinfo
 
 # Maintained Vite plugin and worker sources.
 !/build/
@@ -54,3 +55,14 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# Safe configuration template only
+!.env.example
+# Never publish database exports or local migration data
+/migration-data/
+*.db
+*.sqlite
+*.sqlite3
+/.dev.vars
+/.dev.vars.*
+

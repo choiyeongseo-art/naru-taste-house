@@ -3,6 +3,8 @@
 @import './responsive.css';
 @import './pastel.css';
 @import './y2k.css';
+@import './plaza.css';
+@import './furniture-rotation.css';
 
 @font-face {
   font-family: 'DungGeunMo';

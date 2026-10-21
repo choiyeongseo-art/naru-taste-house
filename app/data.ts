@@ -1,3 +1,4 @@
+import type { FurnitureRotation } from './furniture-rotation';
 import { DEFAULT_CHARACTER, type CharacterPlacement } from './character';
 
 export const friends = [
@@ -23,7 +24,7 @@ export const questions = [
  {f:3,q:'오늘의 방에 마지막으로 이름을 붙여보자. 어떤 마음이 좋아?',a:['언제든 새로운 문을 여는 마음','좋아하는 세계에 푹 빠지는 마음','작은 반짝임을 간직하는 마음','내 속도로 편안히 쉬는 마음'],r:['이제 너의 방을 열어볼까?','너만의 세계가 준비됐어.','네가 아끼는 마음들을 모아봤어.','편하게 머물 수 있는 방이 되었으면 해.']},
 ];
 export type FurnitureKind='sofa'|'desk'|'plant'|'lamp'|'shelf'|'rug'|'cat'|'stereo'|'flowers';
-export type Item={id:string;kind:FurnitureKind;x:number;y:number;flip?:boolean};
+export type Item={id:string;kind:FurnitureKind;x:number;y:number;flip?:boolean;rotation?:FurnitureRotation};
 export type HomeState={nickname:string;bio:string;mood:'blue'|'pink'|'lavender'|'mint';avatar:{hair:number;outfit:number;accessory:number;face?:number};character?:CharacterPlacement;items:Item[];result:number|null;history:{type:number;date:string}[];saved:string[];visited:string[];rewards:string[];points:number};
 export const initialState:HomeState={nickname:'취향 여행자',bio:'좋아하는 것들을 차곡차곡 모으는 중 ♡',mood:'blue',avatar:{hair:0,outfit:0,accessory:0},character:{...DEFAULT_CHARACTER},items:[{id:'sofa',kind:'sofa',x:1,y:3.7},{id:'desk',kind:'desk',x:4,y:1},{id:'rug',kind:'rug',x:2.5,y:2.7},{id:'plant',kind:'plant',x:4.7,y:4},{id:'shelf',kind:'shelf',x:.5,y:.8},{id:'lamp',kind:'lamp',x:.4,y:4.5},{id:'stereo',kind:'stereo',x:4.5,y:2.2}],result:null,history:[],saved:[],visited:[],rewards:[],points:0};
 export const furniture:{kind:FurnitureKind;name:string;cost:number}[]=[{kind:'sofa',name:'구름 소파',cost:0},{kind:'desk',name:'취향 책상',cost:0},{kind:'plant',name:'초록 친구',cost:0},{kind:'lamp',name:'달빛 조명',cost:0},{kind:'shelf',name:'보물 선반',cost:0},{kind:'rug',name:'조개 러그',cost:0},{kind:'stereo',name:'레트로 오디오',cost:0},{kind:'cat',name:'낮잠 고양이',cost:30},{kind:'flowers',name:'여행의 꽃',cost:30}];

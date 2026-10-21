@@ -1,6 +1,6 @@
 import { useId } from 'react';
 
-type PortalKind = 'home' | 'test' | 'room' | 'closet' | 'courses' | 'collection';
+type PortalKind = 'home' | 'test' | 'room' | 'closet' | 'courses' | 'collection' | 'plaza';
 
 /** Small original glass-and-chrome illustrations, kept vector-sharp at menu sizes. */
 export default function PortalIcon({ kind, className = '' }: { kind: PortalKind; className?: string }) {
@@ -14,6 +14,7 @@ export default function PortalIcon({ kind, className = '' }: { kind: PortalKind;
       <linearGradient id={`${id}-lime`} x1='0' y1='0' x2='0' y2='1'><stop stopColor='#f6ffcb'/><stop offset='.45' stopColor='#d6fa8a'/><stop offset='1' stopColor='#94c843'/></linearGradient>
     </defs>
     <ellipse cx='24' cy='42' rx='15' ry='2' fill='#426d9620'/>
+    {kind === 'plaza' && <><path d='m6 29 18-10 18 10-18 11Z' fill={lime} stroke='#659dac'/><path d='m24 19 18 10-7 4-18-10Z' {...shape}/><path d='M9 14q7-9 14 0Z' fill={ice} stroke='#557c9c'/><path d='M16 14v14' stroke='#7790a5' strokeWidth='2'/><path d='M24 27q4-4 8 0t8 0' fill='none' stroke='#fff' strokeWidth='2'/><circle cx='33' cy='10' r='5' fill={chrome}/></>}
     {kind === 'home' && <><path d='M10 23 24 10 38 23v16H10Z' {...shape}/><path d='M6 24 24 7 42 24l-4 4L24 15 10 28Z' fill={chrome} stroke='#657e97' strokeWidth='1.2' strokeLinejoin='round'/><path d='M21 28h8v11h-8Z' fill='#2677c4' stroke='#f1fcff'/><path d='M14 25h5v5h-5Z' fill={lime} stroke='#fff'/><path d='M12 35V24l12-11' fill='none' stroke='#fff' strokeWidth='1.5'/></>}
     {kind === 'test' && <><path d='m28 30 12 10' stroke='#48759c' strokeWidth='8' strokeLinecap='round'/><path d='m29 30 11 9' stroke={chrome} strokeWidth='5' strokeLinecap='round'/><circle cx='21' cy='21' r='15' fill={chrome} stroke='#4c7399' strokeWidth='1.1'/><circle cx='21' cy='21' r='11.6' {...shape}/><path d='m21 12 2.5 6.2L30 21l-6.5 2.5L21 30l-2.5-6.5L12 21l6.5-2.8Z' fill={lime} stroke='#fff' strokeWidth='1'/><path d='M11 19a11 11 0 0 1 9-9' fill='none' stroke='#fff' strokeWidth='2' strokeLinecap='round'/></>}
     {kind === 'room' && <><path d='m8 16 16-8 16 8v21l-16 7-16-7Z' {...shape}/><path d='m8 16 16 8 16-8M24 24v20' fill='none' stroke='#fff' strokeWidth='1.3'/><path d='m13 32 11 5 11-5v-8l-11 5-11-5Z' fill={chrome} stroke='#6382a0' strokeWidth='1'/><path d='m13 24 11 5 11-5-11-5Z' fill={lime} stroke='#f8ffde' strokeWidth='1'/><path d='M11 18v16' stroke='#fff' strokeWidth='1.5'/></>}

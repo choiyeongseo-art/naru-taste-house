@@ -2,7 +2,7 @@ import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'vite';
 
-const server=await createServer({configFile:false,server:{middlewareMode:true,watch:{ignored:['**/outputs/**','**/vendor/skills/**']}},appType:'custom'});
+const server=await createServer({configFile:false,optimizeDeps:{noDiscovery:true,include:[]},server:{hmr:false,middlewareMode:true,watch:{ignored:['**/outputs/**','**/vendor/skills/**']}},appType:'custom'});
 after(()=>server.close());
 const {HomeSchema}=await server.ssrLoadModule('/web/home-schema.ts');
 const {initialState}=await server.ssrLoadModule('/app/data.ts');
@@ -26,4 +26,12 @@ test('invalid character states are rejected before a member save',()=>{
   for(const patch of [{x:Infinity},{y:99},{pose:'unknown'},{animated:'yes'},{frame:9}]){
     assert.equal(HomeSchema.safeParse({...initialState,character:{...initialState.character,...patch}}).success,false);
   }
+});
+
+test('member storage preserves all furniture directions without moving or duplicating items',()=>{
+  const items=initialState.items.map((item,index)=>({...item,rotation:index%4}));
+  const parsed=HomeSchema.parse(JSON.parse(JSON.stringify({...initialState,items})));
+  assert.deepEqual(parsed.items,items);
+  assert.equal(parsed.points,initialState.points);
+  assert.equal(parsed.items.length,initialState.items.length);
 });

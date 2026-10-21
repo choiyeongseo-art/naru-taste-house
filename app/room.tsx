@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
-import { furnitureArt, roomArt } from './art';
+import { getFurnitureArt, roomArt } from './art';
+import { furnitureView, getFurnitureRotation, type FurnitureRotation } from './furniture-rotation';
 import { furniture, type HomeState, type Item, type FurnitureKind } from './data';
 import { CHARACTER_SELECTION, characterPoses, normalizeCharacter, clampRoomCoordinate, projectRoomPoint, unprojectRoomPoint, roomArrowDelta, type CharacterPlacement } from './character';
 import { getCharacterAtlas, poseDisplayScale, type SpriteViewport } from './character-sprites';
@@ -21,7 +22,7 @@ export function Avatar({hair=0,outfit=0,accessory=0,sprite}:HomeState['avatar']&
    <feComposite in='tinted-hair' in2='hair-mask' operator='in' result='masked-tint'/>
    <feComposite in='masked-tint' in2='SourceGraphic' operator='over'/>
   </filter></defs>}
-  {sprite?<svg className='generated-avatar' x='-54' y='-133' width='108' height='144' viewBox={`${sprite.frame.x} ${sprite.frame.y} ${sprite.frame.w} ${sprite.frame.h}`} preserveAspectRatio='none' overflow='hidden' filter={hair!==0?'url(#'+id+')':undefined}><image href={sprite.atlas.src} width={sprite.atlas.width} height={sprite.atlas.height}/></svg>:<image className='generated-avatar' href={src} x='-49' y='-118' width='98' height='134' preserveAspectRatio='xMidYMax meet' filter={hair!==0?'url(#'+id+')':undefined}/>}
+  {sprite?<g clipPath={`url(#${id}-crop)`} data-sprite-crop='true'><defs><clipPath id={`${id}-crop`} clipPathUnits='userSpaceOnUse'><rect x='-54' y='-133' width='108' height='144'/></clipPath></defs><image className='generated-avatar' href={sprite.atlas.src} x={-54-sprite.frame.x*108/sprite.frame.w} y={-133-sprite.frame.y*144/sprite.frame.h} width={sprite.atlas.width*108/sprite.frame.w} height={sprite.atlas.height*144/sprite.frame.h} preserveAspectRatio='none' filter={hair!==0?'url(#'+id+')':undefined}/></g>:<image className='generated-avatar' href={src} x='-49' y='-118' width='98' height='134' preserveAspectRatio='xMidYMax meet' filter={hair!==0?'url(#'+id+')':undefined}/>}
   <g transform={sprite?.frame.face?`translate(${sprite.frame.face.x} ${sprite.frame.face.y}) rotate(${sprite.frame.face.angle}) translate(0 64)`:undefined}>
   {accessory===1&&<g transform='translate(23 -78)' fill='#fff9dc' stroke='#a1bed1' strokeWidth='1'><path d='M-8 0q4-9 10-4-4 2-3 5 5-3 9 1-8 9-16-2Z'/></g>}
   {accessory===2&&<g fill='none' stroke='#82768c' strokeWidth='1.8'><rect x='-23' y='-72' width='19' height='15' rx='4'/><rect x='4' y='-72' width='19' height='15' rx='4'/><path d='M-4-66H4'/></g>}
@@ -44,9 +45,9 @@ export function RoomAvatar({appearance,placement,preview=false}:{appearance:Home
  const shown=animation.frames[(preview?(placement.pose==='dance'?2:0):frame)%animation.frames.length];
  return <g data-pose={placement.pose} data-frame={preview?0:frame} data-animated={placement.animated&&!reducedMotion&&!preview?'true':'false'}><Avatar {...appearance} sprite={{atlas,frame:shown,scale:poseDisplayScale[placement.pose]}}/></g>;
 }
-export function Furniture({kind}:{kind:FurnitureKind;accent?:string}){
- const {src,...frame}=furnitureArt[kind];
- return <image className='generated-furniture' href={src} {...frame} preserveAspectRatio='xMidYMax meet'/>;
+export function Furniture({kind,rotation=0}:{kind:FurnitureKind;rotation?:FurnitureRotation;accent?:string}){
+ const {src,...frame}=getFurnitureArt(kind,rotation),view=furnitureView(rotation);
+ return <g data-furniture-rotation={rotation} data-facing={view.rear?'rear':'front'} data-mirrored={view.mirrored?'true':'false'} transform={view.mirrored?'scale(-1 1)':undefined}><image className='generated-furniture' href={src} {...frame} preserveAspectRatio='xMidYMax meet'/></g>;
 }
 type RoomProps={state:HomeState;editing?:boolean;selected?:string|null;onSelect?:(id:string)=>void;onMove?:(id:string,x:number,y:number)=>void;onMoveCharacter?:(x:number,y:number)=>void;exportRef?:React.RefObject<SVGSVGElement|null>};
 export default function Room({state,editing=false,selected,onSelect,onMove,onMoveCharacter,exportRef}:RoomProps){
@@ -94,7 +95,7 @@ export default function Room({state,editing=false,selected,onSelect,onMove,onMov
    const label=entity.character?'내 캐릭터':furniture.find(f=>f.kind===entity.kind)?.name;
    return <g key={entity.id} data-room-entity={entity.character?'character':entity.id} transform={`translate(${x} ${y})`} role={canMove?'button':undefined} tabIndex={canMove?0:undefined} aria-label={canMove?`${label} 선택, 방향키로 이동`:undefined} aria-pressed={canMove?selected===entity.id:undefined} onKeyDown={canMove?e=>keyMove(e,entity.id,entity.x,entity.y):undefined} onPointerDown={canMove?e=>start(e,entity.id,entity.x,entity.y):undefined} style={{cursor:canMove?(dragged?'grabbing':'grab'):'default',touchAction:canMove?'none':undefined}}>
     {canMove&&selected===entity.id&&<ellipse className='placement-ring' rx={entity.character?34:47} ry={entity.character?13:20} cy='4' fill='#d7f3ff' fillOpacity='.5' stroke='#2574be' strokeWidth='1.6' strokeDasharray='5 4'/>}
-    {entity.character?<><ellipse rx='23' ry='7' cy='3' fill='#577da8' opacity='.13'/><RoomAvatar appearance={state.avatar} placement={character}/>{canMove&&<rect x='-52' y='-126' width='104' height='140' fill='transparent' className='character-hit-area'/>}</>:<g transform={entity.flip?'scale(-1 1)':undefined}><Furniture kind={entity.kind}/></g>}
+    {entity.character?<><ellipse rx='23' ry='7' cy='3' fill='#577da8' opacity='.13'/><RoomAvatar appearance={state.avatar} placement={character}/>{canMove&&<rect x='-52' y='-126' width='104' height='140' fill='transparent' className='character-hit-area'/>}</>:<Furniture kind={entity.kind} rotation={getFurnitureRotation(entity)}/>}
    </g>;
   })}
  </svg>;

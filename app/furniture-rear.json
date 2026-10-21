@@ -1,0 +1,65 @@
+{
+  "sofa": {
+    "src": "./art/furniture-rear/sofa-rear-v2.png",
+    "x": -67.270991,
+    "y": -72.594049,
+    "width": 136.859304,
+    "height": 91.239536
+  },
+  "desk": {
+    "src": "./art/furniture-rear/desk-rear-v2.png",
+    "x": -67.405717,
+    "y": -65.888332,
+    "width": 133.853231,
+    "height": 89.235487
+  },
+  "plant": {
+    "src": "./art/furniture-rear/plant-rear-v1.png",
+    "x": -38.322887,
+    "y": -53.559567,
+    "width": 73.846426,
+    "height": 59.098209
+  },
+  "lamp": {
+    "src": "./art/furniture-rear/lamp-rear-v1.png",
+    "x": -31.409,
+    "y": -53.192333,
+    "width": 63.455,
+    "height": 59.486
+  },
+  "shelf": {
+    "src": "./art/furniture-rear/shelf-rear-v1.png",
+    "x": -48.316534,
+    "y": -105.124837,
+    "width": 97.156799,
+    "height": 112.945823
+  },
+  "rug": {
+    "src": "./art/furniture-rear/rug-rear-v1.png",
+    "x": -86.482485,
+    "y": -61.679119,
+    "width": 173.187625,
+    "height": 115.270619
+  },
+  "cat": {
+    "src": "./art/furniture-rear/cat-rear-v2.png",
+    "x": -34.417242,
+    "y": -39.439866,
+    "width": 70.485804,
+    "height": 46.990536
+  },
+  "stereo": {
+    "src": "./art/furniture-rear/stereo-rear-v2.png",
+    "x": -32.986291,
+    "y": -34.494838,
+    "width": 70.309051,
+    "height": 46.872701
+  },
+  "flowers": {
+    "src": "./art/furniture-rear/flowers-rear-v1.png",
+    "x": -27.759661,
+    "y": -36.041605,
+    "width": 55.690033,
+    "height": 41.767525
+  }
+}

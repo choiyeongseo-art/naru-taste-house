@@ -1,4 +1,6 @@
 import type { FurnitureKind } from './data';
+import rearFrames from './furniture-rear.json';
+import type { FurnitureRotation } from './furniture-rotation';
 
 export const avatarArt = './art/avatar-base.webp';
 export const roomArt = './art/room.webp';
@@ -15,3 +17,8 @@ export const furnitureArt: Record<FurnitureKind, {src:string;x:number;y:number;w
   stereo: {src:'./art/stereo.webp',x:-35,y:-53,width:70,height:65},
   flowers: {src:'./art/flowers.webp',x:-28,y:-80,width:56,height:86},
 };
+
+export function getFurnitureArt(kind:FurnitureKind,rotation:FurnitureRotation=0){
+  const rear=rearFrames as Partial<typeof furnitureArt>;
+  return rotation>=2?(rear[kind]||furnitureArt[kind]):furnitureArt[kind];
+}

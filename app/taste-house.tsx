@@ -77,7 +77,7 @@ export default function TasteHouse({user, storage=serverStorage, onLogin, onLogo
   if(!audio){
    audio=new Audio('./audio/naru-background.mp3');
    audio.loop=true;
-   audio.volume=.35;
+   audio.volume=.5;
    audio.preload='none';
    audio.onplay=()=>setSound(true);
    audio.onpause=()=>setSound(false);

@@ -26,7 +26,7 @@ function PanelTitle({children,extra}:{children:ReactNode;extra?:ReactNode}){retu
 function Modal({title,onClose,children}:{title:string;onClose:()=>void;children:ReactNode}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{ref.current?.showModal();return()=>ref.current?.close();},[]);return <dialog ref={ref} className='modal' onCancel={onClose} onClick={e=>{if(e.target===e.currentTarget)onClose();}}><div className='window-bar'><span>✦ {title}</span><button aria-label='닫기' className='chrome-button' onClick={onClose}><X size={15}/></button></div><div className='modal-body'>{children}</div></dialog>;}
 
 export default function TasteHouse({user, storage=serverStorage, onLogin, onLogout, onManageAccount}:{user:{name:string;email:string}|null;storage?:HomeStorage;onLogin?:()=>void;onLogout?:()=>void;onManageAccount?:()=>void}){
- const [state,setState]=useState<HomeState>(initialState),[page,setPage]=useState<Page>('home'),[loaded,setLoaded]=useState(false),[sync,setSync]=useState('loading'),[toast,setToast]=useState(''),[modal,setModal]=useState<{kind:string;id?:string}|null>(null),[editing,setEditing]=useState(false),[selected,setSelected]=useState<string|null>(null),[furnTab,setFurnTab]=useState('furniture'),[q,setQ]=useState(-1),[answers,setAnswers]=useState<number[]>([]),[choice,setChoice]=useState<number|null>(null),[completed,setCompleted]=useState(false),[filter,setFilter]=useState('전체'),[area,setArea]=useState('전체 지역'),[budget,setBudget]=useState('전체 예산'),[search,setSearch]=useState(''),[view,setView]=useState('courses'),[sound,setSound]=useState(false),[zoom,setZoom]=useState(1),[saveTime,setSaveTime]=useState<number|null>(null);
+ const [state,setState]=useState<HomeState>(initialState),[page,setPage]=useState<Page>('home'),[loaded,setLoaded]=useState(false),[sync,setSync]=useState('loading'),[toast,setToast]=useState(''),[modal,setModal]=useState<{kind:string;id?:string}|null>(null),[editing,setEditing]=useState(false),[selected,setSelected]=useState<string|null>(null),[furnTab,setFurnTab]=useState('furniture'),[q,setQ]=useState(-1),[answers,setAnswers]=useState<number[]>([]),[choice,setChoice]=useState<number|null>(null),[completed,setCompleted]=useState(false),[filter,setFilter]=useState('전체'),[area,setArea]=useState('전체 지역'),[budget,setBudget]=useState('전체 예산'),[search,setSearch]=useState(''),[view,setView]=useState('courses'),[sound,setSound]=useState(true),[zoom,setZoom]=useState(1),[saveTime,setSaveTime]=useState<number|null>(null);
  const [loginInvite,setLoginInvite]=useState(false);
  const saveQueue=useRef<Promise<void>>(Promise.resolve()),pendingTaste=useRef<string|null>(null);
  const roomRef=useRef<SVGSVGElement|null>(null),audioRef=useRef<HTMLAudioElement|null>(null),original=useRef(''),toastTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -72,21 +72,37 @@ export default function TasteHouse({user, storage=serverStorage, onLogin, onLogo
  function rotateSelectedFurniture(rotation?:FurnitureRotation){if(!selected||selected===CHARACTER_SELECTION)return;setState(s=>({...s,items:s.items.map(item=>item.id===selected?withFurnitureRotation(item,rotation??nextFurnitureRotation(item)):item)}));}
  function moveItem(id:string,x:number,y:number){setState(s=>({...s,items:s.items.map(i=>i.id===id?{...i,x,y}:i)}));}
  async function exportRoom(){if(!roomRef.current)return;try{await document.fonts.load('51px "DungGeunMo"');const svg=roomRef.current.cloneNode(true) as SVGSVGElement;svg.setAttribute('width','1000');svg.setAttribute('height','786');svg.querySelectorAll('.placement-ring,.character-hit-area').forEach(el=>el.remove());await Promise.all(Array.from(svg.querySelectorAll('image')).map(async image=>{const href=image.getAttribute('href');if(!href||href.startsWith('data:'))return;const response=await fetch(new URL(href,document.baseURI));if(!response.ok)throw Error('image load');const blob=await response.blob();const data=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});image.setAttribute('href',data);}));const data=new XMLSerializer().serializeToString(svg);const url=URL.createObjectURL(new Blob([data],{type:'image/svg+xml'}));const img=new Image();img.src=url;await img.decode();const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=1100;const ctx=canvas.getContext('2d')!;ctx.fillStyle='#edf6fd';ctx.fillRect(0,0,1200,1100);ctx.fillStyle='#fffdf9';ctx.fillRect(35,35,1130,1030);ctx.textAlign='center';ctx.fillStyle='#42617b';ctx.font='bold 51px "DungGeunMo", sans-serif';ctx.fillText(`${state.nickname}의 취향방`,600,110);ctx.font='33px "DungGeunMo", sans-serif';ctx.fillStyle='#71859b';ctx.fillText(state.result===null?'좋아하는 것들로 나를 채우는 작은 방':results[state.result].title,600,156);ctx.drawImage(img,100,165,1000,786);ctx.font='30px "DungGeunMo", sans-serif';ctx.fillStyle='#6f8ca7';ctx.fillText('NARU & FRIENDS  ·  나루와 취향들',600,1010);URL.revokeObjectURL(url);canvas.toBlob(blob=>{if(!blob)return;const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='나의-취향방.png';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);},'image/png');notify('취향방을 이미지로 저장했어요.');}catch{notify('이미지 저장에 실패했어요. 다시 시도해 주세요.');}}
- function toggleSound(){
-  let audio=audioRef.current;
-  if(!audio){
-   audio=new Audio('./audio/naru-background.mp3');
-   audio.loop=true;
-   audio.volume=.5;
-   audio.preload='none';
-   audio.onplay=()=>setSound(true);
-   audio.onpause=()=>setSound(false);
-   audio.onerror=()=>{setSound(false);notify('배경음악을 불러오지 못했어요. 다시 시도해 주세요.');};
-   audioRef.current=audio;
+ useEffect(()=>{
+  const audio=audioRef.current??new Audio('./audio/naru-background.mp3');
+  audioRef.current=audio;
+  audio.loop=true;
+  audio.volume=.5;
+  audio.preload='none';
+  if(!sound){audio.pause();return;}
+  let active=true;
+  function playbackFailed(error:unknown){
+   // Autoplay restrictions are retried on the next user gesture.
+   if(!active||(error instanceof DOMException&&(error.name==='NotAllowedError'||error.name==='AbortError')))return;
+   setSound(false);
+   notify('배경음악을 재생하지 못했어요. 다시 시도해 주세요.');
   }
-  if(!audio.paused){audio.pause();return;}
-  void audio.play().catch(()=>{setSound(false);notify('배경음악을 재생하지 못했어요. 다시 시도해 주세요.');});
- }
+  function startAudio(event?:Event){
+   if(event?.target instanceof Element&&event.target.closest('[data-music-toggle]'))return;
+   if(audio.paused)void audio.play().catch(playbackFailed);
+  }
+  audio.onerror=()=>{if(active){setSound(false);notify('배경음악을 불러오지 못했어요. 다시 시도해 주세요.');}};
+  startAudio();
+  document.addEventListener('click',startAudio);
+  document.addEventListener('keydown',startAudio);
+  return()=>{
+   active=false;
+   document.removeEventListener('click',startAudio);
+   document.removeEventListener('keydown',startAudio);
+   audio.onerror=null;
+   audio.pause();
+  };
+ },[sound]);
+ function toggleSound(){setSound(enabled=>!enabled);}
 
  const selectedFurniture=state.items.find(item=>item.id===selected);
  const result=state.result===null?null:results[state.result];
@@ -111,7 +127,7 @@ export default function TasteHouse({user, storage=serverStorage, onLogin, onLogo
  <div className='profile-card'><div className='profile-image'><span className='floating-star'>✧</span><TinyAvatar avatar={state.avatar}/></div><button className='text-button nickname' onClick={()=>setModal({kind:'profile'})}>{state.nickname}<Settings2 size={13}/></button><p className='profile-bio'>{state.bio}</p><div className='profile-tags'>{(result?.tags||['취향 발견 중','작은 행복']).slice(0,2).map(t=><span key={t}>#{t}</span>)}</div></div>
  <nav className='side-nav' aria-label='마이홈 메뉴'>{tabs.map(t=><button key={t.id} onClick={()=>go(t.id)} aria-current={page===t.id?'page':undefined} className={(page===t.id?'active ':'')+(t.id==='plaza'?'nav-plaza':'')}><PortalIcon kind={t.id}/><span className='nav-label'>{t.label}</span>{t.id==='test'?<span className='new-label'>NEW</span>:t.id==='collection'?<span className='nav-count'>{state.saved.length}</span>:<ChevronRight size={13}/>}</button>)}</nav>
  <div className='sparkle-wallet'><span className='coin'>✦</span><span>나의 반짝이</span><b>{state.points}</b></div>
- <div className='music-player'><div className={'record '+(sound?'playing':'')}><span>♡</span></div><div><span>Little waves, little days</span></div><button aria-label={sound?'배경음악 끄기':'배경음악 재생'} aria-pressed={sound} onClick={toggleSound}>{sound?<Volume2 size={14}/>:<VolumeX size={14}/>}</button></div>
+ <div className='music-player'><div className={'record '+(sound?'playing':'')}><span>♡</span></div><div><span>Little waves, little days</span></div><button aria-label={sound?'배경음악 끄기':'배경음악 재생'} data-music-toggle aria-pressed={sound} onClick={toggleSound}>{sound?<Volume2 size={14}/>:<VolumeX size={14}/>}</button></div>
  <div className={'sync-state '+(sync.includes('error')?'sync-error':'')}>{sync==='saving'||sync==='loading'?<LoaderCircle size={12} className='spin'/>:sync.includes('error')?<CloudOff size={12}/>:<Cloud size={12}/>}<span>{sync==='saved'?'계정에 저장되었어요':sync==='saving'?'방을 저장하는 중…':sync==='loading'?'내 방을 불러오는 중…':sync==='guest'?'이 브라우저에 임시 보관 중':sync==='load-error'?'계정의 방을 불러오지 못했어요':'저장 실패 · 다시 시도해 주세요'}</span></div>{sync==='load-error'?<button className='text-button small-link' onClick={()=>location.reload()}>다시 불러오기</button>:sync==='error'?<button className='text-button small-link' onClick={()=>void save()}>저장 다시 시도</button>:!user?<button className='text-button small-link' onClick={requestLogin}>로그인하고 내 방 이어가기 <LogIn size={12}/></button>:null}
  </aside>
  <div className='mobile-status'><span>✦ {state.points} 반짝이</span><span>{sync==='saved'?<><span className='emoji emoji-mono' aria-hidden='true'>☁</span> 계정 저장 완료</>:sync==='saving'?<><span className='emoji emoji-mono' aria-hidden='true'>☁</span> 저장하는 중…</>:sync==='guest'?'이 브라우저에 임시 보관':sync.includes('error')?'저장을 확인해 주세요':'내 방을 불러오는 중…'}</span></div>
@@ -162,7 +178,7 @@ export default function TasteHouse({user, storage=serverStorage, onLogin, onLogo
  <footer className='window-footer'><span>NARU & FRIENDS <span>© 2026 NARU</span></span></footer>
  </main>
  <footer className='desktop-footer'><button className='text-button' onClick={()=>setModal({kind:'about'})}>이 작은 세계에 대하여 <ArrowUpRight size={12}/></button></footer>
- <div className='taskbar'><button onClick={()=>go('home')}><PortalIcon kind='home'/> 나의 취향방</button><span className='taskbar-divider'/><span className='taskbar-current'><span className='online-dot'/>{tabs.find(t=>t.id===page)?.label}</span><span className='taskbar-meta'>NARU & FRIENDS <span className='pixel-spark' aria-hidden='true'/></span><button className='taskbar-sound' aria-label={sound?'배경음악 끄기':'배경음악 재생'} aria-pressed={sound} onClick={toggleSound}>{sound?<Volume2 size={16}/>:<VolumeX size={16}/>}</button></div>
+ <div className='taskbar'><button onClick={()=>go('home')}><PortalIcon kind='home'/> 나의 취향방</button><span className='taskbar-divider'/><span className='taskbar-current'><span className='online-dot'/>{tabs.find(t=>t.id===page)?.label}</span><span className='taskbar-meta'>NARU & FRIENDS <span className='pixel-spark' aria-hidden='true'/></span><button className='taskbar-sound' aria-label={sound?'배경음악 끄기':'배경음악 재생'} data-music-toggle aria-pressed={sound} onClick={toggleSound}>{sound?<Volume2 size={16}/>:<VolumeX size={16}/>}</button></div>
  {loginInvite&&!user&&<div className='login-invite' role='status'><span className='emoji' aria-hidden='true'>💾</span><div><b>방금 찾은 취향, 다음에도 이어가요.</b><p>로그인하면 테스트 결과와 꾸민 방이 계정에 저장돼요.</p></div><button className='button primary' onClick={requestLogin}>로그인하고 저장</button><button className='login-invite-close' onClick={()=>setLoginInvite(false)} aria-label='로그인 안내 닫기'><X size={16}/></button></div>}
  {toast&&<div className='toast' role='status'><span>✦</span>{toast}<button onClick={()=>setToast('')} aria-label='알림 닫기'><X size={13}/></button></div>}
 

@@ -2,21 +2,52 @@
 @import './features.css';
 @import './responsive.css';
 @import './pastel.css';
+@import './y2k.css';
 
 @font-face {
-  font-family: 'Ongleip Uiyeon';
-  src: url('./fonts/ongleip-uiyeon.ttf') format('truetype');
+  font-family: 'DungGeunMo';
+  src: url('./fonts/DungGeunMo.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mona Emoji';
+  src: url('./fonts/Mona12Emoji.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mona Emoji';
+  src: url('./fonts/Mona12Emoji-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mona Color Emoji';
+  src: url('./fonts/Mona12ColorEmoji.ttf') format('truetype');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 :root {
-  --font-uiyeon: 'Ongleip Uiyeon', sans-serif;
+  --font-emoji: 'Mona Color Emoji', 'Mona Emoji', 'Segoe UI Emoji', sans-serif;
+  --font-body: 'DungGeunMo', var(--font-emoji), sans-serif;
 }
-/* Keep theme wrappers, form controls and SVG labels on the embedded font. */
+/* Include theme wrappers, controls, pseudo elements and SVG text. */
 body, body *, body *::before, body *::after {
-  font-family: var(--font-uiyeon);
+  font-family: var(--font-body);
 }
+body .emoji, body .emoji::before, body .emoji::after {
+  font-family: var(--font-emoji);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+}
+body .emoji-mono { font-family: 'Mona Emoji', var(--font-emoji); }
+body .emoji-bold { font-family: 'Mona Emoji', var(--font-emoji); font-weight: 700; }
 
 /* Allow the enlarged type to wrap without clipping controls or cards. */
 .brand .brand-title { display:block; width:220px; height:auto; max-width:100%; }
@@ -73,4 +104,16 @@ body, body *, body *::before, body *::after {
  .mobile-status, .list-topline { flex-wrap:wrap; }
  .detail-actions>* { flex-basis:100%; }
  .friends-line { gap:8px; flex-wrap:wrap; }
+}
+
+/* Pixel lettering is wider than the previous handwriting face. */
+.desktop .inventory>.mini-tabs>button { font-size:14px; line-height:1.5; word-break:keep-all; padding:8px 3px; }
+.desktop .header-greeting { font-size:13px; white-space:nowrap; }
+.pose-option, .motion-toggle, .character-position-heading { word-break:keep-all; }
+/* Keep compact cards readable with the square Korean glyph widths. */
+.desktop .quiz-teaser h2 { font-size:24px; line-height:1.6; word-break:keep-all; }
+.desktop .quiz-teaser .button { font-size:16px; }
+.desktop .quiz-teaser>small { font-size:12px; word-break:keep-all; }
+@media(max-width:680px) {
+ .desktop .side-nav>button { font-size:14px; line-height:1.45; word-break:keep-all; }
 }

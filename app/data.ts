@@ -1,3 +1,5 @@
+import { DEFAULT_CHARACTER, type CharacterPlacement } from './character';
+
 export const friends = [
  {name:'나루',key:'naru',color:'#A9D8F3',tag:'발견하는 즐거움',line:'저기, 네가 좋아할 것 같은데?'},
  {name:'달리',key:'dalli',color:'#F6CFE2',tag:'깊이 빠지는 즐거움',line:'한 번만 더. 이번엔 진짜.'},
@@ -22,8 +24,8 @@ export const questions = [
 ];
 export type FurnitureKind='sofa'|'desk'|'plant'|'lamp'|'shelf'|'rug'|'cat'|'stereo'|'flowers';
 export type Item={id:string;kind:FurnitureKind;x:number;y:number;flip?:boolean};
-export type HomeState={nickname:string;bio:string;mood:'blue'|'pink'|'lavender'|'mint';avatar:{hair:number;outfit:number;accessory:number};items:Item[];result:number|null;history:{type:number;date:string}[];saved:string[];visited:string[];rewards:string[];points:number};
-export const initialState:HomeState={nickname:'취향 여행자',bio:'좋아하는 것들을 차곡차곡 모으는 중 ♡',mood:'blue',avatar:{hair:0,outfit:0,accessory:0},items:[{id:'sofa',kind:'sofa',x:1,y:3.7},{id:'desk',kind:'desk',x:4,y:1},{id:'rug',kind:'rug',x:2.5,y:2.7},{id:'plant',kind:'plant',x:4.7,y:4},{id:'shelf',kind:'shelf',x:.5,y:.8},{id:'lamp',kind:'lamp',x:.4,y:4.5},{id:'stereo',kind:'stereo',x:4.5,y:2.2}],result:null,history:[],saved:[],visited:[],rewards:[],points:0};
+export type HomeState={nickname:string;bio:string;mood:'blue'|'pink'|'lavender'|'mint';avatar:{hair:number;outfit:number;accessory:number;face?:number};character?:CharacterPlacement;items:Item[];result:number|null;history:{type:number;date:string}[];saved:string[];visited:string[];rewards:string[];points:number};
+export const initialState:HomeState={nickname:'취향 여행자',bio:'좋아하는 것들을 차곡차곡 모으는 중 ♡',mood:'blue',avatar:{hair:0,outfit:0,accessory:0},character:{...DEFAULT_CHARACTER},items:[{id:'sofa',kind:'sofa',x:1,y:3.7},{id:'desk',kind:'desk',x:4,y:1},{id:'rug',kind:'rug',x:2.5,y:2.7},{id:'plant',kind:'plant',x:4.7,y:4},{id:'shelf',kind:'shelf',x:.5,y:.8},{id:'lamp',kind:'lamp',x:.4,y:4.5},{id:'stereo',kind:'stereo',x:4.5,y:2.2}],result:null,history:[],saved:[],visited:[],rewards:[],points:0};
 export const furniture:{kind:FurnitureKind;name:string;cost:number}[]=[{kind:'sofa',name:'구름 소파',cost:0},{kind:'desk',name:'취향 책상',cost:0},{kind:'plant',name:'초록 친구',cost:0},{kind:'lamp',name:'달빛 조명',cost:0},{kind:'shelf',name:'보물 선반',cost:0},{kind:'rug',name:'조개 러그',cost:0},{kind:'stereo',name:'레트로 오디오',cost:0},{kind:'cat',name:'낮잠 고양이',cost:30},{kind:'flowers',name:'여행의 꽃',cost:30}];
 export type Place={id:string;name:string;area:string;address:string;tag:string;desc:string;hours:string;url:string;type:number;art:string};
 export const places:Place[]=[

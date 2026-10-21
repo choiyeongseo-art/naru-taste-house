@@ -68,3 +68,6 @@ next-env.d.ts
 
 
 /dist-public/
+
+# Project-local sprite generation skill and its Python environment.
+/vendor/skills/
